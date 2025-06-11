@@ -57,13 +57,13 @@ def text_node_to_html_node(text_node):
     elif text_node.text_type == TextType.TEXT:
         return LeafNode(None, text_node.text)
     elif text_node.text_type == TextType.BOLD:
-        return LeafNode("b")
+        return LeafNode("b", text_node.text)
     elif text_node.text_type == TextType.ITALIC:
-        return LeafNode("i")
+        return LeafNode("i", text_node.text)
     elif text_node.text_type == TextType.CODE:
-        return LeafNode("code")
+        return LeafNode("code", text_node.text)
     elif text_node.text_type == TextType.LINK:
-        return LeafNode("a[href]")
+        return LeafNode("a[href]", text_node.text)
     elif text_node.text_type == TextType.IMAGE:
-        return LeafNode("img","", "src", "alt")
+        return LeafNode("img","", "src", "alt", text_node.text)
     
