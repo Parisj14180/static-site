@@ -6,6 +6,7 @@ from node_delimiter import extract_markdown_images
 from node_delimiter import extract_markdown_links
 from node_delimiter import split_nodes_image
 from node_delimiter import split_nodes_link
+from node_delimiter import text_to_textnodes
 
 class TestDelimiter(unittest.TestCase):
     def test_split_nodes_delimiter_basic(self):
@@ -43,5 +44,15 @@ class TestDelimiter(unittest.TestCase):
             new_nodes,
         )
         
+    def test_text_to_textnodes_simple_image():
+        input_text = "Here is an ![alt](img.png)"
+        nodes = text_to_textnodes(input_text)
+        # Now: check that nodes looks like [Text(TEXT), Text(IMAGE), ...] etc.
+        assert nodes[0].text == "Here is an "
+        assert nodes[0].text_type == TextType.TEXT
+        assert nodes[1].text == "alt"
+        assert nodes[1].text_type == TextType.IMAGE
+        assert nodes[1].url == "img.png"
+
 if __name__ == "__main__":
     unittest.main()

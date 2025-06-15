@@ -55,3 +55,9 @@ def split_nodes_link(old_nodes):
         if remaining_text_to_process != "":
              new_nodes.append(TextNode(remaining_text_to_process, TextType.TEXT)) 
     return new_nodes
+
+def text_to_textnodes(text):
+    nodes = [TextNode(text, TextType.TEXT)]
+    nodes = split_nodes_image(nodes)
+    nodes = split_nodes_link(nodes)
+    return nodes
