@@ -1,6 +1,4 @@
-from textnode import TextNode
-from textnode import TextType
-
+from textnode import TextNode, TextType
 
 class HTMLNode:
     def __init__(self=None, tag=None, value=None, children=None, props=None):

@@ -27,8 +27,17 @@ def extract_markdown_links(text):
 def split_nodes_image(old_nodes):
     new_nodes = []
     for node in old_nodes:
+        if node.text_type != TextType.TEXT:
+            new_nodes.append(node)
+            continue
+            
         remaining_text_to_process = node.text
         image = extract_markdown_images(node.text)
+        
+        if not image:  # No images found
+            new_nodes.append(node)
+            continue
+            
         for alt_text, url in image:
             image_markdown_string = f"![{alt_text}]({url})"
             parts = remaining_text_to_process.split(image_markdown_string, 1)
@@ -43,8 +52,17 @@ def split_nodes_image(old_nodes):
 def split_nodes_link(old_nodes):
     new_nodes = []
     for node in old_nodes:
+        if node.text_type != TextType.TEXT:
+            new_nodes.append(node)
+            continue
+            
         remaining_text_to_process = node.text
         link = extract_markdown_links(node.text)
+        
+        if not link:  # No links found
+            new_nodes.append(node)
+            continue
+
         for alt_text, url in link:
             link_markdown_string = f"[{alt_text}]({url})"
             parts = remaining_text_to_process.split(link_markdown_string, 1)
@@ -61,3 +79,7 @@ def text_to_textnodes(text):
     nodes = split_nodes_image(nodes)
     nodes = split_nodes_link(nodes)
     return nodes
+
+
+
+
