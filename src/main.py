@@ -58,6 +58,7 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
         item_path = os.path.join(dir_path_content, content) 
 
         if os.path.isfile(item_path) and content.endswith(".md"):
+            print(f"Inside markdown file processing block for: {item_path}")
             new_html_filename = content[0:-3] + ".html"
             dest_path = os.path.join(dest_dir_path, new_html_filename) 
 
@@ -66,9 +67,11 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
 
             with open(template_path, "r", encoding="utf-8") as template_file:
                 template_content = template_file.read()
+            print("Finished reading template content.")
 
             html_node = markdown_to_html_node(markdown_content)
             html_content = html_node.to_html()
+            print("Finished converting markdown to html.")
 
             page_title = "Default Title"
             lines = markdown_content.splitlines()
@@ -76,13 +79,20 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
                 if line.startswith("# "):
                     page_title = line[2:].strip()
                     break
+            print(f"Extracted title: {page_title}")
 
             html_with_content = template_content.replace("{{ Content }}", html_content)
+            print("Replaced content placeholder.")
+
             final_html = html_with_content.replace("{{ Title }}", page_title)
+            print("Replaced title placeholder.") 
 
             os.makedirs(os.path.dirname(dest_path), exist_ok=True)
+            print(f"Ensured directory exists: {os.path.dirname(dest_path)}")
+
             with open(dest_path, "w", encoding="utf-8") as f:
                 f.write(final_html)
+            print(f"Wrote HTML file to: {dest_path}")
 
         elif os.path.isdir(item_path): 
             new_dest_dir_path = os.path.join(dest_dir_path, content)
