@@ -25,13 +25,16 @@ class LeafNode(HTMLNode):
         super().__init__(tag, value, None, props)
 
     def to_html(self):
+        if self.tag == "img":
+            props_str = self.props_to_html()
+            return f"<img{props_str}>"
         if self.value is None:
-           raise ValueError("All leaf nodes must have a value")
+            raise ValueError("All leaf nodes must have a value")
         if self.tag is None:
-           return self.value
+            return self.value
         else:
             props_str = self.props_to_html()
-            return f'<{self.tag}{props_str}>{self.value}</{self.tag}>'
+            return f"<{self.tag}{props_str}>{self.value}</{self.tag}>"
         
 
 class ParentNode(HTMLNode):
@@ -61,7 +64,7 @@ def text_node_to_html_node(text_node):
     elif text_node.text_type == TextType.CODE:
         return LeafNode("code", text_node.text)
     elif text_node.text_type == TextType.LINK:
-        return LeafNode("a[href]", text_node.text)
+        return LeafNode("a", text_node.text, {"href": text_node.url})
     elif text_node.text_type == TextType.IMAGE:
-        return LeafNode("img","", "src", "alt", text_node.text)
-    
+        return LeafNode("img", None, {"src": text_node.url, "alt": text_node.text})
+        
