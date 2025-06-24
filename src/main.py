@@ -1,7 +1,14 @@
+import sys 
 import os
 import shutil
 from markdown_blocks import markdown_to_html_node
 from htmlnode import LeafNode
+
+if len(sys.argv) > 1:
+    basepath = sys.argv[1]
+else:
+    basepath = "/"
+
 
 def copy_recursive(source_dir, dest_dir):
     items = os.listdir(source_dir)
@@ -20,11 +27,11 @@ def copy_recursive(source_dir, dest_dir):
 
 
 def copy_static_to_public():
-    if os.path.exists("public"):
-        shutil.rmtree("public")
-    os.mkdir("public")
+    if os.path.exists("docs"):
+        shutil.rmtree("docs")
+    os.mkdir("docs")
 
-    copy_recursive("static", "public")
+    copy_recursive("static", "docs")
 
 def extract_title(markdown):
     for line in markdown.splitlines():
@@ -45,12 +52,14 @@ def generate_page(from_path, template_path, dest_path):
 
     output_content = template_content.replace("{{ Title }}", title)
     output_content = output_content.replace("{{ Content }}", html_content)
+    output_content = output_content.replace('href="/', f'href="{basepath}')
+    output_content = output_content.replace('src="/', f'src="{basepath}')
 
     os.makedirs(os.path.dirname(dest_path), exist_ok=True)
     with open(dest_path, "w", encoding="utf-8") as f:
         f.write(output_content)
 
-def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, basepath):
     contents = os.listdir(dir_path_content)
     print(f"Contents of {dir_path_content}: {contents}")
     for content in contents:
@@ -82,10 +91,9 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
             print(f"Extracted title: {page_title}")
 
             html_with_content = template_content.replace("{{ Content }}", html_content)
-            print("Replaced content placeholder.")
-
             final_html = html_with_content.replace("{{ Title }}", page_title)
-            print("Replaced title placeholder.") 
+            final_html = final_html.replace('href="/', f'href="{basepath}')
+            final_html = final_html.replace('src="/', f'src="{basepath}')
 
             os.makedirs(os.path.dirname(dest_path), exist_ok=True)
             print(f"Ensured directory exists: {os.path.dirname(dest_path)}")
@@ -96,7 +104,7 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
 
         elif os.path.isdir(item_path): 
             new_dest_dir_path = os.path.join(dest_dir_path, content)
-            generate_pages_recursive(item_path, template_path, new_dest_dir_path)
+            generate_pages_recursive(item_path, template_path, new_dest_dir_path, basepath)
 
         
 
@@ -105,7 +113,8 @@ def main():
     generate_pages_recursive(
         "content",
         "template.html",
-        "public",
+        "docs",
+        basepath,
     )
 
 if __name__ == "__main__":
